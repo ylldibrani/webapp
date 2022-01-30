@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  selector:
+      matchLabels:
+          app: myapp
+  replicas: 4
+  template:
+    metadata:
+      labels:
+          app: myapp
+    spec:
+      containers:
+      - name: testpage
+        image: testpage.azurecr.io/myapp:v3
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
+      imagePullSecrets:
+      - name: myappimage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-loadbalancer
+spec:
+  type: LoadBalancer
+  selector:
+    app: myapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
